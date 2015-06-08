@@ -34,7 +34,7 @@ public abstract class Traversal {
 
 	protected final int NO_ENTER = 0;
 
-	protected Vector<Point> vicinity(Point point) {
+	private Vector<Point> vicinity(Point point) {
 		Vector<Point>
 			result = new Vector();
 
@@ -48,7 +48,7 @@ public abstract class Traversal {
 		return result;
 	}
 
-	protected Iterable<Point> auxTraverseFrom(Point point, int volumeLimit) {
+	private Iterable<Point> auxTraverseFrom(Point point, int volumeLimit) {
 		Queue<Point>
 			queue   = new PriorityQueue();
 
