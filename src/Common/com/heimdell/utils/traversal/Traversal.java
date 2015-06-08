@@ -6,10 +6,10 @@ import java.util.*;
 public abstract class Traversal {
 	protected abstract int     classify(Point point);
 	protected abstract boolean canGo   (int colorFrom, int colorTo);
-	protected abstract void    dispatch(int color,     Point point);
+	protected abstract void    dispatch(Point point);
 
-	protected class Point {
-		public int x, y, z;
+	protected class Point implements Comparable<Point> {
+		public int x, y, z, color;
 
 		public Point(int x, int y, int z) {
 			this.x = x;
@@ -17,66 +17,64 @@ public abstract class Traversal {
 			this.z = z;
 		}
 
+		public void makeClassified() {
+			if (this.color == 0)
+				this.color = classify(this);
+		}
+
 		public Point offset(int dx, int dy, int dz) {
 			return new Point(x + dx, y + dy, z + dz);
+		}
+
+		@Override
+		public int compareTo(Point point) {
+			return point.color - color;
 		}
 	}
 
 	protected final int NO_ENTER = 0;
 
 	protected Vector<Point> vicinity(Point point) {
-		Point[] candidates = new Point[] {
-			point.offset( 1,  0,  0),
-			point.offset(-1,  0,  0),
-			point.offset( 0,  0,  1),
-			point.offset( 0,  0, -1),
-			point.offset( 0,  1,  0),
-			point.offset( 0, -1,  0),
-		};
-
 		Vector<Point>
 			result = new Vector();
 
-		for (Point candidate : candidates) {
-			result.add(candidate);
+		for (int x = -1; x <= 1; x++) 
+		for (int y = -1; y <= 1; y++)
+		for (int z = -1; z <= 1; z++) {
+			if (x != 0 || y != 0 || z != 0)
+				result.add(point.offset(x, y, z));
 		}
 
 		return result;
 	}
 
-	protected InjectiveMap<Integer, Point> auxTraverseFrom(Point point, int volumeLimit) {
+	protected Iterable<Point> auxTraverseFrom(Point point, int volumeLimit) {
 		Queue<Point>
-			queue   = new ArrayDeque();
-
-		InjectiveMap<Integer, Point>
-			mapping = new InjectiveMap();
+			queue   = new PriorityQueue();
 
 		HashSet<Point>
 			visited = new HashSet();
 
-		mapping.put(classify(point), point);
-		queue  .add(point);
+		queue.add(point);
+		point.makeClassified();
 
 		for (; volumeLimit > 0 && !queue.isEmpty(); volumeLimit--) {
 			Point current = queue.remove();
 
 			visited.add(current);
 
-			int color = mapping.getSource(current);
-
-			if (color != 0)
+			if (current.color != NO_ENTER)
 				for (Point near : vicinity(point)) {
 					if (!visited.contains(near)) {
-						if (!mapping.hasTarget(near))
-							mapping.put(classify(near), near);
+						near.makeClassified();
 
-						if (canGo(color, mapping.getSource(near)))
+						if (canGo(current.color, near.color))
 							queue.add(near);
 					}
 				}
 		}
 
-		return mapping;
+		return visited;
 	}
 
 	public void run(Point from) {
@@ -84,13 +82,8 @@ public abstract class Traversal {
 	}
 
 	public void run(Point from, int limith) {
-		InjectiveMap<Integer, Point>
-			mapping = auxTraverseFrom(from, limith);
-
-		for (Point pt : mapping.setOfTargets()) {
-			Integer color = mapping.getSource(pt);
-
-			dispatch(color, pt);
+		for (Point pt : auxTraverseFrom(from, limith)) {
+			dispatch(pt);
 		}
 	}
 
