@@ -11,7 +11,7 @@ import java.util.*;
 	doesn't fit your purposes.
 
 	Traversal traversal = new Traversal() { ... implementation... }
-	traversal.run();
+	traversal.run(new traversal.Point(x, y, z));
 */
 public abstract class Traversal {
 	// assign the number to the block at given point
