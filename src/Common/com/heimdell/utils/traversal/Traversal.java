@@ -96,7 +96,7 @@ public abstract class Traversal {
 		return result;
 	}
 
-	private Iterable<Point> auxTraverseFrom(Point point, int volumeLimit) {
+	private Collection<Point> auxTraverseFrom(Point point, int volumeLimit) {
 		Queue<Point>
 			queue   = new PriorityQueue();
 
@@ -127,14 +127,18 @@ public abstract class Traversal {
 		return visited;
 	}
 
-	public void run(int x, int y, int z) {
-		run(x, y, z, 10000);
+	public int run(int x, int y, int z) {
+		return run(x, y, z, 10000);
 	}
 
-	public void run(int x, int y, int z, int limith) {
-		for (Point pt : auxTraverseFrom(new Point(x, y, z), limith)) {
+	public int run(int x, int y, int z, int limith) {
+		Collection<Point> sequence = auxTraverseFrom(new Point(x, y, z), limith);
+
+		for (Point pt : sequence) {
 			dispatch(pt);
 		}
+
+		return sequence.size();
 	}
 
 }
