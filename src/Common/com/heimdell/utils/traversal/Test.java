@@ -53,9 +53,7 @@ public class Test {
 			System.out.print("\n");
 		}
 
-		System.out.println("->");
-
-		traversal.run(6, 3, 0);
+		System.out.println("-> " + traversal.run(6, 3, 0));
 
 		for (int[] row : space) {
 			for (int cell : row) {
