@@ -28,7 +28,9 @@ public abstract class Traversal {
 	// in dense forests it could wipe more leaves that supposed to;
 	// however, we could classify leaves farther than +/-5 X/Z as air
 	// to stop the algorithm
-	protected abstract boolean canGo   (int colorFrom, int colorTo);
+	protected boolean canGo   (int colorFrom, int colorTo) {
+		return colorFrom >= colorTo;
+	}
 
 	// perform some action on traversed block:
 	//   cut the wood, wipe the leaves, update the air, etc.
@@ -69,6 +71,12 @@ public abstract class Traversal {
 			}
 			return false;
 		}
+
+		@Override
+		public int hashCode() {
+			return x + 92821 * (y + 92821 * z);
+		}
+
 	}
 
 	// the "air" constant
@@ -105,8 +113,8 @@ public abstract class Traversal {
 			visited.add(current);
 
 			if (current.color != AIR)
-				for (Point near : vicinity(point)) {
-					// make sure we're no classifying same point twice
+				for (Point near : vicinity(current)) {
+					// make sure we're not classifying same point twice
 					if (!visited.contains(near)) {
 						near.makeClassified();
 
@@ -119,12 +127,12 @@ public abstract class Traversal {
 		return visited;
 	}
 
-	public void run(Point from) {
-		run(from, 10000);
+	public void run(int x, int y, int z) {
+		run(x, y, z, 10000);
 	}
 
-	public void run(Point from, int limith) {
-		for (Point pt : auxTraverseFrom(from, limith)) {
+	public void run(int x, int y, int z, int limith) {
+		for (Point pt : auxTraverseFrom(new Point(x, y, z), limith)) {
 			dispatch(pt);
 		}
 	}
