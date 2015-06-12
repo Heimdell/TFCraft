@@ -7,11 +7,11 @@ import java.util.*;
 	This class is supposed to be anonimously overriden, implementing some
 	methods.
 
-	The "vicinity" method could be overriden, too, if the 26-vicinity 
+	The "vicinity" method could be overriden too, if the 26-vicinity 
 	doesn't fit your purposes.
 
 	Traversal traversal = new Traversal() { ... implementation... }
-	traversal.run(new traversal.Point(x, y, z));
+	int blocksTraversed = traversal.run(x, y, z);
 */
 public abstract class Traversal {
 	// assign the number to the block at given point
@@ -28,13 +28,13 @@ public abstract class Traversal {
 	// in dense forests it could wipe more leaves that supposed to;
 	// however, we could classify leaves farther than +/-5 X/Z as air
 	// to stop the algorithm
-	protected boolean canGo   (int colorFrom, int colorTo) {
+	protected boolean canGo(int colorFrom, int colorTo) {
 		return colorFrom >= colorTo;
 	}
 
 	// perform some action on traversed block:
 	//   cut the wood, wipe the leaves, update the air, etc.
-	protected abstract void    dispatch(Point point);
+	protected abstract void dispatch(Point point);
 
 	protected class Point implements Comparable<Point> {
 		public int x, y, z, color;
